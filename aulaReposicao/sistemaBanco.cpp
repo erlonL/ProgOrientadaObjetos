@@ -132,6 +132,9 @@ public:
     void remove_conta(int idx){
         contas.erase(contas.begin() + idx);
     }
+    vector<Conta> get_contas(){ return contas; }
+
+    int get_num_contas(){ return contas.size(); }
 
     int get_codigo(){ return codigo; }
 
@@ -170,27 +173,86 @@ public:
     }
 };
 
+string formatCPF(string cpf){
+    // Verifique se a entrada tem 11 dígitos (CPF sem formatação)
+    if (cpf.length() != 11) {
+        cout << "CPF inválido. Deve conter 11 dígitos." << endl;
+        return NULL;
+    }
 
+    // Formate o CPF com pontos e traço
+    string formattedCPF = cpf.substr(0, 3) + "." + cpf.substr(3, 3) + "." + cpf.substr(6, 3) + "-" + cpf.substr(9, 2);
+
+    return formattedCPF;
+}
 
 
 int main(void){
-    Cliente *c1 = new Cliente("João", "123.456.789-00", "Rua 1");
-    Cliente *c2 = new Cliente("Maria", "987.654.321-00", "Rua 2");
-
-    Conta *conta1 = new Conta(1, c1, 1000);
-    Conta *conta2 = new Conta(2, c2, 2000);
+    // Criação do Banco Base (1)
+    Cliente c1("João", "123.456.789-00", "Rua 1");
+    Cliente c2("Maria", "987.654.321-00", "Rua 2");
+    Conta conta1(1, &c1, 1000);
+    Conta conta2(2, &c2, 2000);
 
     Banco *b = new Banco(1);
-    b->add_conta(*conta1);
-    b->add_conta(*conta2);
+    b.add_conta(&conta1);
+    b.add_conta(&conta2);
+    // b->print_info();
 
-    b->print_info();
+    cout << "Seja Bem vindo ao Banco " << b->get_codigo() << endl;
+    string nome;
+    string cpf;
+    string endereco;
+    int opcao;
+    do{
+        cout << "Escolha uma opção:" << endl;
+        cout << "1 - Criar Conta" << endl;
+        cout << "2 - Remover Conta" << endl;
+        cout << "3 - Transferir" << endl;
+        cout << "4 - Sair" << endl;
+        cout << ">> " endl;
+        cin >> opcao;
 
-    cout << "\033[1m Transferindo 500 da conta 1 para a conta 2...\033[0m" << endl;
+        switch(opcao){
+            case 1:
+                // Criar Conta
+                cout << "Digite o nome do cliente: ";
+                cin >> nome;
 
-    b->transferir(1, 3, 500);
+                // Formatar CPF
+                cout << "Digite o CPF do cliente: ";
+                cin >> cpf;
+                cpf = formatCPF(cpf);
 
-    b->print_info();
+                cout << "Digite o endereço do cliente: ";
+                cin >> endereco;
 
+                Cliente* c = new Cliente(nome, cpf, endereco);
+                Conta* conta = new Conta(b->get_num_contas() + 1, c, 0);
+                b->add_conta(conta);
+                break;
+            case 2:
+                // Remover Conta
+                cout << "Digite o número da conta: ";
+                int numero;
+                cin >> numero;
+                b->remove_conta(numero);
+                break;
+            case 3:
+                // Transferir
+                cout << "Digite o número da conta de origem: ";
+                int numero1;
+                cin >> numero1;
+                cout << "Digite o número da conta de destino: ";
+                int numero2;
+                cin >> numero2;
+                cout << "Digite o valor a ser transferido: ";
+                float valor;
+                cin >> valor;
+                b->transferir(numero1, numero2, valor);
+                break;
+        }
+    }while(opcao > 0 && opcao < 4);
+    
     return 0;
 }
