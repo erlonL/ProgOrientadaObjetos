@@ -263,6 +263,7 @@ public:
     void devolver_material(usuario* u, material* m){
         for(auto it = emprestimos.begin(); it != emprestimos.end(); it++){
             if((*it)->get_user() == u && (*it)->get_mat() == m){
+                cout << **it << endl;
                 emprestimos.erase(it);
                 break;
             }
