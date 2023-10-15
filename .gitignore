@@ -1,2 +1,5 @@
 !*.cpp
 !*.c
+graph-kam.cpp
+outros/!*.cpp
+outros/!*.c
